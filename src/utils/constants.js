@@ -34,7 +34,9 @@ export const MESSAGE_TYPE_RANGE =                            'sensor_msgs/Range'
 export const MESSAGE_TYPE_MARKER =                           'visualization_msgs/Marker';
 export const MESSAGE_TYPE_MARKERARRAY =                      'visualization_msgs/MarkerArray';
 export const MESSAGE_TYPE_POSECOVARIANCE =                   'geometry_msgs/PoseWithCovariance';
-export const MESSAGE_TYPE_INTERACTIVEMARKER =                'visualization_msgs/InteractiveMarkerInit';
+export const MESSAGE_TYPE_INTERACTIVEMARKER_INIT =           'visualization_msgs/InteractiveMarkerInit';
+export const MESSAGE_TYPE_INTERACTIVEMARKER_UPDATE =         'visualization_msgs/InteractiveMarkerUpdate';
+export const MESSAGE_TYPE_INTERACTIVEMARKER_FEEDBACK =       'visualization_msgs/InteractiveMarkerFeedback';
 
 export const TF_TOPICS = [
   ['/tf', MESSAGE_TYPE_TF],
@@ -60,7 +62,7 @@ export const SUPPORTED_MESSAGE_TYPES = [
   MESSAGE_TYPE_POSESTAMPED,
   MESSAGE_TYPE_ROBOT_MODEL,
   MESSAGE_TYPE_IMAGE,
-  MESSAGE_TYPE_INTERACTIVEMARKER
+  MESSAGE_TYPE_INTERACTIVEMARKER_UPDATE
 ];
 
 export const UNSUPPORTED_MESSAGE_TYPES = [

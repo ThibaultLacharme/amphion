@@ -92,3 +92,35 @@ export const MARKERARRAY_TYPES = {
   MESH_RESOURCE: 10,
   TRIANGLE_LIST: 11,
 };
+
+/*
+# "3D" interaction modes work with the mouse+SHIFT+CTRL or with 3D cursors.
+# MOVE_3D: Translate freely in 3D space.
+# ROTATE_3D: Rotate freely in 3D space about the origin of parent frame.
+# MOVE_ROTATE_3D: Full 6-DOF freedom of translation and rotation about the cursor origin.
+*/
+export const INTERACTION_MODES = {
+  NONE: 0,
+  MENU: 1,
+  BUTTON: 2,
+  MOVE_AXIS: 3,
+  MOVE_PLANE: 4,
+  ROTATE_AXIS: 5,
+  MOVE_ROTATE: 6,
+
+  MOVE_3D: 7,
+  ROTATE_3D: 8,
+  MOVE_ROTATE_3D: 9,
+};
+
+/*
+# Orientation mode: controls how orientation changes.
+# INHERIT: Follow orientation of interactive marker
+# FIXED: Keep orientation fixed at initial state
+# VIEW_FACING: Align y-z plane with screen (x: forward, y:left, z:up).
+*/
+export const ORIENTATION_MODES = {
+  INHERIT: 0,
+  FIXED: 1,
+  VIEW_FACING: 2,
+};

@@ -8,10 +8,7 @@ class InteractiveMarkers extends Core {
     super(ros, topicName, MESSAGE_TYPE_INTERACTIVEMARKER_UPDATE);
 
     this.options = options;
-
     this.object = new THREE.Object3D();
-    this.object.isInteractiveMarker = true;
-    this.object.name = 'InteractiveMarker';
 
     this.onInitSuccess = this.onInitSuccess.bind(this);
 
@@ -19,7 +16,6 @@ class InteractiveMarkers extends Core {
     const { scene } = this.options;
     const initOptions = {
       onInitSuccess: this.onInitSuccess,
-      object: this.object,
       ...options,
     };
     this.interactiveMarkerInit = new InteractiveMarkerInit(ros, initTopicName, initOptions);
@@ -39,6 +35,11 @@ class InteractiveMarkers extends Core {
       this.interactiveMarkerInit.updatePose(message);
       this.interactiveMarkerInit.erase(message);
     }
+  }
+
+  destroy() {
+    super.destroy();
+    this.interactiveMarkerInit.destroy();
   }
 }
 

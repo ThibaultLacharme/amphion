@@ -16,9 +16,7 @@ class InteractiveMarkerInit extends Core {
     this.objectMap = {};
 
     const { onInitSuccess } = options;
-    const { object } = options;
 
-    this.object = object;
     this.callback = onInitSuccess;
     this.onceMouseDownFlag = true;
 
@@ -114,7 +112,7 @@ class InteractiveMarkerInit extends Core {
       const transformControl = new TransformControl(transformCtrlOptions);
       const object = new Group();
 
-      // This object should be transform controls
+      // FIX: Plane translation bug when rotation is 0,0,0,0
       if (rotation.w === 0) {
         rotation.w = 1;
       }
@@ -193,6 +191,16 @@ class InteractiveMarkerInit extends Core {
     this.initMarkers(message);
     this.unsubscribe();
     this.callback();
+  }
+
+  destroy() {
+    for(const entry in this.objectMap) {
+      const { controls, object } = this.objectMap[entry];
+
+      controls.detachObject(object);
+      object.parent.remove(object);
+      delete this.objectMap[entry];
+    }
   }
 }
 

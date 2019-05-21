@@ -177,6 +177,7 @@ class InteractiveMarkerInit extends Core {
 
       controls.detachObject();
       object.parent.remove(object);
+      delete this.objectMap[markerName];
     }
   }
 

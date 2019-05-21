@@ -97,10 +97,7 @@ class InteractiveMarkerInit extends Core {
     }
   }
 
-
-  updateMarkers(message) {
-    console.log(message);
-
+  initMarkers(message) {
     const { markers } = message;
 
     markers.forEach((marker) => {
@@ -153,8 +150,46 @@ class InteractiveMarkerInit extends Core {
     });
   }
 
+  updatePose(message) {
+    const { poses } = message;
+
+    poses.forEach((poseMsg) => {
+      const {
+        name,
+        pose : {
+          position: translation,
+          orientation: rotation,
+        },
+      }  = poseMsg;
+
+      const { object: currentObj } = this.objectMap[name];
+      if (currentObj) {
+        currentObj.setTransform({ translation, rotation });
+      }
+    });
+  }
+
+  eraseMarker(markerName) {
+    const currentMarker = this.objectMap[markerName];
+
+    if (currentMarker) {
+      const { controls, object } = currentMarker;
+
+      controls.detachObject();
+      object.parent.remove(object);
+    }
+  }
+
+  erase(message) {
+    const { erases } = message;
+
+    erases.forEach((markerName) => {
+      this.eraseMarker(markerName);
+    });
+  }
+
   update(message) {
-    this.updateMarkers(message);
+    this.initMarkers(message);
     this.unsubscribe();
     this.callback();
   }

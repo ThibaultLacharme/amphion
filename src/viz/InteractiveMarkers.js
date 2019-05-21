@@ -26,24 +26,18 @@ class InteractiveMarkers extends Core {
     this.interactiveMarkerInit.subscribe();
   }
 
-  testTransformControls() {
-    const box = new Cube();
-    box.setColor(new THREE.Color('#ff0000'));
-    this.object.add(box);
-    this.attachTransformControls(box);
-  }
-
   onInitSuccess() {
     this.initSucess = true;
   }
 
-  attachTransformControls(object) {
-    const transformControls = new TransformControls(object, this.options);
-    transformControls.enable6DOF('local');
-  }
-
   update(message) {
-    if (this.initSucess) {
+    const { type } = message;
+
+    // If markers are initialized and type is update i.e 1
+    if (this.initSucess && type === 1) {
+      this.interactiveMarkerInit.initMarkers(message);
+      this.interactiveMarkerInit.updatePose(message);
+      this.interactiveMarkerInit.erase(message);
     }
   }
 }

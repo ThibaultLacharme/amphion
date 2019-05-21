@@ -13,14 +13,37 @@ class InteractiveMarkerInit extends Core {
     super(ros, topicName, MESSAGE_TYPE_INTERACTIVEMARKER_INIT);
 
     this.options = options;
+    this.objectMap = {};
 
     const { onInitSuccess } = options;
     const { object } = options;
 
     this.object = object;
     this.callback = onInitSuccess;
+    this.onceMouseDownFlag = true;
+
+    this.onTMouseDown = this.onTMouseDown.bind(this);
+    this.onTMouseUp = this.onTMouseUp.bind(this);
   }
 
+  onTMouseDown (object) {
+    if (object) {
+
+      for(const entry in this.objectMap) {
+        const { object: currentObj, controls } = this.objectMap[entry];
+        if (currentObj.name !== object.name) {
+          controls.disable(true);
+        }
+      }
+    }
+  }
+
+  onTMouseUp() {
+    for(const entry in this.objectMap) {
+      const { controls } = this.objectMap[entry];
+      controls.disable(false);
+    }
+  }
 
   processMarker(marker) {
     const markerViz = new Marker();
@@ -81,20 +104,30 @@ class InteractiveMarkerInit extends Core {
     const { markers } = message;
 
     markers.forEach((marker) => {
-      const transformControl = new TransformControl(this.options);
-      const object = new Group();
-      object.add(new Axes(0.01, 0.5));
+      const transformCtrlOptions = {
+        onMouseDown: this.onTMouseDown,
+        onMouseUp: this.onTMouseUp,
+        ...this.options,
+      };
       const {
         pose: { position: translation, orientation: rotation },
         controls,
         name
       } = marker;
+      const transformControl = new TransformControl(transformCtrlOptions);
+      const object = new Group();
 
       // This object should be transform controls
       if (rotation.w === 0) {
         rotation.w = 1;
       }
 
+      this.objectMap[name] = {
+        controls: transformControl,
+        object: object
+      };
+
+      object.add(new Axes(0.01, 0.5));
       object.name = name;
       object.setTransform({ translation, rotation });
 

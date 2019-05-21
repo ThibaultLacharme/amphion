@@ -33,6 +33,8 @@ class TransformControls {
       camera,
       scene,
       orbitControls,
+      onMouseDown,
+      onMouseUp,
     } = options;
 
     this.object = null;
@@ -41,7 +43,18 @@ class TransformControls {
     this.scene = scene;
     this.orbitControls = orbitControls;
 
+    this.onMouseDown = onMouseDown;
+    this.onMouseUp = onMouseUp;
+
     this.initTransformControls();
+  }
+
+  disable(value) {
+    if (!value) {
+      this.attachObject(this.object);
+    } else {
+      this.detachObject();
+    }
   }
 
   initTransformControls() {
@@ -53,10 +66,12 @@ class TransformControls {
 
     transformControls.addEventListener('mouseDown', () => {
       this.orbitControls.enabled = false;
+      this.onMouseDown(this.object);
     });
 
     transformControls.addEventListener('mouseUp', () => {
       this.orbitControls.enabled = true;
+      this.onMouseUp();
     });
 
     this.transformControls = transformControls;

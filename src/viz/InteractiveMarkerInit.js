@@ -1,5 +1,12 @@
+import ROSLIB from 'roslib';
 import Core from '../core';
-import { INTERACTION_MODES, ORIENTATION_MODES, MESSAGE_TYPE_INTERACTIVEMARKER_INIT } from '../utils/constants';
+import {
+  INTERACTION_MODES,
+  ORIENTATION_MODES,
+  FEEDBACK_EVENT_TYPES,
+  MESSAGE_TYPE_INTERACTIVEMARKER_INIT,
+  MESSAGE_TYPE_INTERACTIVEMARKER_FEEDBACK
+} from '../utils/constants';
 import Group from '../primitives/Group';
 import Marker from './Marker';
 import TransformControl, { AXIS_MAP, ROTATE_MAP, PLANE_MAP } from '../utils/TransformControl';
@@ -22,6 +29,15 @@ class InteractiveMarkerInit extends Core {
 
     this.onTMouseDown = this.onTMouseDown.bind(this);
     this.onTMouseUp = this.onTMouseUp.bind(this);
+    this.onObjectChange = this.onObjectChange.bind(this);
+
+
+    this.transformCtrlOptions = {
+      onMouseDown: this.onTMouseDown,
+      onMouseUp: this.onTMouseUp,
+      onObjectChange: this.onObjectChange,
+      ...this.options,
+    };
   }
 
   onTMouseDown (object) {
@@ -40,6 +56,41 @@ class InteractiveMarkerInit extends Core {
     for(const entry in this.objectMap) {
       const { controls } = this.objectMap[entry];
       controls.disable(false);
+    }
+  }
+
+  onObjectChange(object) {
+    if (object) {
+      const { name, position, quaternion } = object;
+      const { marker } = this.objectMap[name];
+      const pose = {
+        position,
+        orientation: {
+          x: quaternion.x,
+          y: quaternion.y,
+          z: quaternion.z,
+          w: quaternion.w,
+        },
+      };
+      const feedbackTopic = new ROSLIB.Topic({
+        ros: this.ros,
+        name: '/basic_controls/feedback',
+        MESSAGE_TYPE_INTERACTIVEMARKER_FEEDBACK,
+      });
+      const msg = {
+        header: {
+          frame_id: object.parent.name,
+        },
+        marker_name:  name,
+        client_id: 'testing',
+        event_type: FEEDBACK_EVENT_TYPES.POSE_UPDATE,
+        pose
+      };
+      const feedbackMsg = new ROSLIB.Message({
+        ...msg,
+      });
+
+      feedbackTopic.publish(feedbackMsg);
     }
   }
 
@@ -99,17 +150,12 @@ class InteractiveMarkerInit extends Core {
     const { markers } = message;
 
     markers.forEach((marker) => {
-      const transformCtrlOptions = {
-        onMouseDown: this.onTMouseDown,
-        onMouseUp: this.onTMouseUp,
-        ...this.options,
-      };
       const {
         pose: { position: translation, orientation: rotation },
         controls,
         name
       } = marker;
-      const transformControl = new TransformControl(transformCtrlOptions);
+      const transformControl = new TransformControl(this.transformCtrlOptions);
       const object = new Group();
 
       // FIX: Plane translation bug when rotation is 0,0,0,0
@@ -119,7 +165,8 @@ class InteractiveMarkerInit extends Core {
 
       this.objectMap[name] = {
         controls: transformControl,
-        object: object
+        object: object,
+        marker: marker,
       };
 
       object.add(new Axes(0.01, 0.5));

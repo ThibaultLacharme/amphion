@@ -124,3 +124,19 @@ export const ORIENTATION_MODES = {
   FIXED: 1,
   VIEW_FACING: 2,
 };
+
+/*
+# Type of the event
+# KEEP_ALIVE: sent while dragging to keep up control of the marker
+# MENU_SELECT: a menu entry has been selected
+# BUTTON_CLICK: a button control has been clicked
+# POSE_UPDATE: the pose has been changed using one of the controls
+*/
+export const FEEDBACK_EVENT_TYPES = {
+  KEEP_ALIVE: 0,
+  POSE_UPDATE: 1,
+  MENU_SELECT: 2,
+  BUTTON_CLICK: 3,
+  MOUSE_DOWN: 4,
+  MOUSE_UP: 5,
+}

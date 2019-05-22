@@ -35,6 +35,7 @@ class TransformControls {
       orbitControls,
       onMouseDown,
       onMouseUp,
+      onObjectChange,
     } = options;
 
     this.object = null;
@@ -43,6 +44,7 @@ class TransformControls {
     this.scene = scene;
     this.orbitControls = orbitControls;
 
+    this.onObjectChange = onObjectChange;
     this.onMouseDown = onMouseDown;
     this.onMouseUp = onMouseUp;
 
@@ -63,6 +65,10 @@ class TransformControls {
       this.domElement.current,
     );
     transformControls.setSpace('local');
+
+    transformControls.addEventListener('objectChange', () => {
+      this.onObjectChange(this.object);
+    });
 
     transformControls.addEventListener('mouseDown', () => {
       this.orbitControls.enabled = false;
